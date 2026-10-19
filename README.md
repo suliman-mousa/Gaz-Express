@@ -72,7 +72,7 @@ Routing consistency is enforced through database-level constraints and transacti
 
 | Metric | Value |
 |---|---|
-| Registered users | 4,000+ |
+| Registered users | 3,000+ |
 | Orders processed | 2,500+ |
 | Active delivery zones | 30 |
 | Engineering team (launch) | 4 engineers: system design, architecture, production launch |
