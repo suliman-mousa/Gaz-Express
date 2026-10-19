@@ -7,9 +7,8 @@ Coordinate-based zone routing · Admin-managed agent assignment · Conflict-free
 |---|---|
 | **Program** | Project 2025 · Gaz Express |
 | **Current product line** | v2 (production) · **v3 in active planning / delivery** |
-| **This repository** | Flutter multi-role mobile client (`gas_app`) |
-| **Android application ID** | `com.gazxpress24.app` |
-| **Client version** | `2.0.10+26` |
+| **Distribution** | [Google Play](https://play.google.com/store/apps/details?id=com.gazxpress24.app) · [App Store](https://apps.apple.com/de/app/gazxpress/id6752856616) |
+
 
 
 > **Scope note.** This document describes the Gaz Express platform for context.
