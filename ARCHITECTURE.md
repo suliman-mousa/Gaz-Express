@@ -264,8 +264,8 @@ Sequence diagrams: [`DIAGRAMS.md`](./DIAGRAMS.md).
 
 | Version | Theme | Status |
 |---|---|---|
-| **v1** | Zone routing, admin-managed assignment, role platforms | Validated in production (2,500+ orders, 30 zones) |
-| **v2** | Control operational dependencies outside routing | Production (4,000+ users) |
+| **v1** | Zone routing, admin-managed assignment, role platforms | Validated in production (1,700+ orders, 30 zones) |
+| **v2** | Control operational dependencies outside routing | Production (3,000+ users) |
 | **v3** | Extend routing model; scale hardening | **Active** |
 
 ### 8.1 v3 architecture backlog
