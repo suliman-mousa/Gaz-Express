@@ -10,6 +10,7 @@
 | **Package** | `com.gazxpress24.app` |
 | **Client version** | `2.0.10+26` |
 | **Classification** | Internal / stakeholder engineering |
+| **Distribution** | [Google Play](https://play.google.com/store/apps/details?id=com.gazxpress24.app) · [App Store](https://apps.apple.com/de/app/gazxpress/id6752856616) |
 
 **Companion artifacts:** [`README.md`](./README.md) · [`DIAGRAMS.md`](./DIAGRAMS.md) · [`ENGINEERING_REMEDIATION_REPORT.md`](./ENGINEERING_REMEDIATION_REPORT.md) 
 
