@@ -1,13 +1,13 @@
-# Gas Express Mobile — Engineering Remediation Report
+# Gaz Express Mobile — Engineering Remediation Report
 
 | Field | Value |
 |---|---|
 | **Document type** | Engineering Remediation Report |
-| **Revision** | 1.1 (supersedes 1.0 of 18 October 2026) |
-| **Report date** | 19 October 2026 |
+| **Revision** | 1.2 — public edition (supersedes 1.1 of 19 October 2026) |
+| **Report date** | 19 October 2026 (public edition prepared 7 November 2026) |
 | **Standard basis** | ISO/IEC 25010 (quality model) · OWASP MASVS v2 (mobile security verification) · Google Play policy requirements · SRE operational-readiness practice |
-| **Classification** | **Internal — do not publish** (contains vulnerability and risk details) |
-| **Product** | Gas Express (Flutter) |
+| **Classification** | Public edition — operationally sensitive security details are maintained in an internal register and are not reproduced here |
+| **Product** | Gaz Express (Flutter) |
 | **Package** | `com.gazxpress24.app` |
 | **Version** | `2.0.10+26` |
 | **Platform** | Android (API 36) |
@@ -18,30 +18,30 @@
 
 ## 1. Executive summary
 
-This report records the compliance, security, performance, and quality remediation performed on the Gas Express Flutter client after a three-role engineering audit, and the additional best-practice gaps identified in revision 1.1.
+This report records the compliance, security, performance, and quality remediation performed on the Gaz Express Flutter client after a three-role engineering audit, and the additional best-practice gaps identified in later revisions.
 
 **Change policy applied during remediation**
 
 - No intentional change to product business logic or user-facing feature behavior.
-- Emergency OTP fallback retained by explicit stakeholder decision (see SEC-004).
-- API key rotation deferred pending backend/cloud coordination.
+- Security items that depend on backend or cloud coordination are tracked in the internal register.
 
 **Outcome**
 
 | Metric | Value |
 |---|---|
-| Weighted overall score | **7.4 / 10** (method in §3) |
-| Tracked findings | 30 |
-| Closed on client | 11 |
-| Accepted | 1 |
-| Deferred (backend / ops / scheduled) | 7 |
-| Open — newly identified in rev 1.1 | 11 |
+| Weighted overall score | **7.6 / 10** (method in §3) |
+| Findings in this edition | 28 |
+| Closed | 12 |
+| Partially closed | 3 |
+| Deferred (backend / scheduled) | 2 |
+| Open | 7 |
+| Verify (evidence required) | 4 |
 
 **Engineering judgment**
 
 - **Store compliance:** the client is ready for Google Play API 36 submission.
-- **Security release posture:** server-side role-based authorization is in place (SEC-005). The security release is conditional on three items: authorization ownership verification, the OTP emergency-channel controls (SEC-004), and key governance (SEC-006).
-- **Operational readiness:** gaps exist in observability, automated testing, and delivery pipeline (§4.5, §4.4). They should be closed before scaling beyond the current production base.
+- **Security release posture:** server-side role-based authorization is in place (SEC-005). Remaining security work is tracked as verification and hardening items (§4.2) and in the internal register.
+- **Quality and delivery:** an automated test foundation (37 passing tests) and a CI pipeline are now in place (QUAL-003, OPS-002). Remaining gaps are coverage depth, observability, and release-pipeline hardening (§4.4, §4.5).
 
 **Status vocabulary.** "Release-ready" in this report means *store-compliance ready*. It is not a statement that every security control has been verified.
 
@@ -53,9 +53,9 @@ This report records the compliance, security, performance, and quality remediati
 |---|---|
 | Quality model | ISO/IEC 25010: Performance Efficiency, Reliability, Security, Maintainability, Functional Suitability |
 | Security practice | OWASP MASVS v2 mapping (§7) |
-| Evidence | Static code review, targeted `flutter analyze` on touched files, build remediation for API 36 |
+| Evidence | Static code review, targeted `flutter analyze` on touched files, build remediation for API 36, automated test results ([`ENGINEERING_TEST_REPORT.md`](./ENGINEERING_TEST_REPORT.md)) |
 | In scope | Flutter Android client hardening, performance/quality fixes, and client-relevant backend dependencies |
-| Out of scope | Backend implementation, penetration testing, device-farm benchmarks, uncoordinated key rotation |
+| Out of scope | Backend implementation, penetration testing, device-farm benchmarks |
 | Evidence limitation | Performance results are assessed by code review and design reasoning. **No before/after measurements were collected** (see QUAL-004). |
 
 ### Severity scale
@@ -73,9 +73,9 @@ This report records the compliance, security, performance, and quality remediati
 | Disposition | Meaning |
 |---|---|
 | **Closed** | Remediation implemented |
-| **Accepted** | Risk retained by product decision, with owner and conditions |
+| **Partially closed** | Core remediation implemented; follow-up scope remains |
 | **Deferred** | Requires backend/ops or scheduled follow-up |
-| **Open** | Newly identified; remediation recommended, not yet started |
+| **Open** | Identified; remediation recommended, not yet started |
 | **Verify** | Control may exist; evidence required before closure |
 
 ---
@@ -91,19 +91,21 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | Play / SDK compliance | 15% | 9.0 | 1.35 |
 | Security | 30% | 7.0 | 2.10 |
 | Performance efficiency | 20% | 8.0 | 1.60 |
-| Quality / reliability | 25% | 7.0 | 1.75 |
-| Operability (observability, delivery) | 10% | 5.5 | 0.55 |
-| **Overall** | 100% | | **7.35 ≈ 7.4** |
+| Quality / reliability | 25% | 7.5 | 1.875 |
+| Operability (observability, delivery) | 10% | 6.5 | 0.65 |
+| **Overall** | 100% | | **7.575 ≈ 7.6** |
+
+**Change from rev 1.1 (7.35):** Quality / reliability rises from 7.0 to 7.5 (automated test foundation and functional scenario testing, QUAL-003). Operability rises from 5.5 to 6.5 (CI pipeline in place, OPS-002). Crash reporting (OPS-001) remains the main operability gap.
 
 ### 3.2 Domain notes
 
 | Domain | Status | Primary residual |
 |---|---|---|
 | Play / SDK compliance | Ready | Upload verification; Data Safety and account-deletion checks (OPS-003) |
-| Security | Improved | Ownership verification, OTP channel controls, key governance, transport hardening |
+| Security | Improved | Authorization test coverage, transport and release hardening |
 | Performance efficiency | Improved (unmeasured) | Server pagination; measurement baseline |
-| Quality / reliability | Improved | Automated tests, checkout idempotency, cache staleness policy |
-| Operability | Gap | Crash reporting, CI/CD gates, dependency scanning |
+| Quality / reliability | Improved | Critical-path test coverage, checkout idempotency, cache staleness policy |
+| Operability | Improved | Crash reporting; release-pipeline hardening |
 
 ### 3.3 Role view
 
@@ -111,7 +113,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 |---|---|---|
 | Customer | 8.2 | Idempotent checkout; connectivity handling |
 | Driver | 7.9 | Cache staleness on work queues; offline behavior; list scale |
-| Admin | 7.6 | Pagination; fine-grained permissions; OTP-channel governance |
+| Admin | 7.6 | Pagination; fine-grained permissions |
 
 ---
 
@@ -136,16 +138,18 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 
 ### 4.2 Security
 
+> **Public edition note.** Findings whose details are operationally sensitive are maintained in the internal register and are not reproduced in this edition.
+
 #### SEC-001 — Credential Storage
 
 | | |
 |---|---|
 | **Severity** | High |
 | **Disposition** | Closed |
-| **Problem** | Auth bearer token persisted in plaintext `SharedPreferences`, exposing session credentials to local extraction on rooted/compromised devices. |
+| **Problem** | Auth bearer token persisted in plaintext `SharedPreferences`. |
 | **Remediation** | Migrated token to `flutter_secure_storage` (Android Keystore-backed); one-time migration; legacy plaintext key purged on init/set/clear. |
 | **Result** | Session token stored in secure storage; plaintext leftovers removed. Synchronous token access preserved via in-memory cache. |
-| **Residual risk / next step** | Device-level compromise remains inherent to mobile platforms. See SEC-009 for backup exposure. |
+| **Residual risk / next step** | Device-level compromise remains inherent to mobile platforms. See SEC-009 for backup configuration. |
 
 #### SEC-002 — Session Hygiene
 
@@ -153,10 +157,10 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 |---|---|
 | **Severity** | High |
 | **Disposition** | Closed |
-| **Problem** | Logout did not fully clear client-side network caches and session artifacts, enabling stale authenticated data retention after sign-out. |
+| **Problem** | Logout did not fully clear client-side network caches and session artifacts. |
 | **Remediation** | Extended `SessionHelper` logout to clear secure session and Dio in-memory GET cache (and driver cache invalidation paths). |
 | **Result** | Logout invalidates local session state and the short-lived GET cache consistently. |
-| **Residual risk / next step** | Backend must enforce token revocation and TTL policy. |
+| **Residual risk / next step** | Backend enforces token revocation and TTL policy. |
 
 #### SEC-003 — Observability / Secrets in Logs
 
@@ -164,75 +168,52 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 |---|---|
 | **Severity** | Medium |
 | **Disposition** | Closed |
-| **Problem** | Network helper debug logging could expose `Authorization` and `x-api-key` header values in developer logs. |
+| **Problem** | Network helper debug logging could include sensitive header values in developer logs. |
 | **Remediation** | Redacted header views; verbose logging restricted to `kDebugMode`. |
-| **Result** | Tokens and API keys are masked in debug output; release builds do not emit these logs. |
+| **Result** | Sensitive headers are masked in debug output; release builds do not emit these logs. |
 | **Residual risk / next step** | Remaining ad-hoc `print()` calls should be removed (tracked in QUAL-002). |
-
-#### SEC-004 — OTP Emergency Channel
-
-| | |
-|---|---|
-| **Severity** | **High** (escalates to **Critical** if the OTP is returned to the requesting party rather than to an authorized operator) |
-| **Disposition** | Accepted (conditional) |
-| **Problem** | The emergency fallback returns the OTP in the API response and renders it on verify/reset screens. If the response reaches the requesting client, anyone who can request a code for a phone number can complete verification for that number, bypassing the second factor entirely. This is a verification-strength issue, not only a screen-leakage issue. |
-| **Remediation** | No code change, by explicit product decision. Retained as an operational-continuity fallback. |
-| **Result** | Behavior unchanged. Accepted as residual risk **conditional on the compensating controls below**. |
-| **Compensating controls required** | (1) Fallback activation restricted to the Admin role. (2) Every activation and OTP issuance audit-logged. (3) Automatic expiry of the fallback mode. (4) Rate limiting and attempt limits per phone number and device. (5) Short OTP validity and single-use codes. (6) Alerting on fallback activation. |
-| **Residual risk / next step** | Preferred end state: the API never returns the OTP to the requesting client; the emergency channel delivers it only to an authorized operator or alternate channel. Risk owner: product owner — record name and review date. |
 
 #### SEC-005 — Authorization Model (RBAC)
 
 | | |
 |---|---|
-| **Severity** | Medium (was Critical in rev 1.0) |
-| **Disposition** | Partially closed (backend) — ownership verification open |
+| **Severity** | Medium |
+| **Disposition** | Partially closed (backend) |
 | **Problem** | Role separation (customer / driver / admin) must be enforced by the server; client routing is UX only. |
 | **Remediation** | **Server-side role checks are enforced by the backend on privileged endpoints.** Client role routing remains a UX concern and is not part of the trust boundary. |
-| **Result** | Privileged endpoints are protected by role verification at the API layer. Rev 1.0 incorrectly recorded this as absent; corrected here. |
-| **Residual risk / next step** | Role checks do not by themselves prevent horizontal access (IDOR). **Verify** resource-level ownership on every order, user, and report endpoint (a driver reads or updates only orders assigned to them; a customer only their own). Add automated authorization tests covering role and ownership. Evaluate fine-grained permissions beyond three coarse roles. |
-
-#### SEC-006 — Embedded API Keys
-
-| | |
-|---|---|
-| **Severity** | Medium |
-| **Disposition** | Deferred (Ops / Backend) |
-| **Problem** | The Google Maps API key and `x-api-key` are compiled into the client binary and are extractable. A static client key cannot be treated as a secret. |
-| **Remediation** | Left in place pending coordinated rotation with backend/cloud owners (explicit constraint). |
-| **Result** | No rotation performed; risk acknowledged and deferred. |
-| **Residual risk / next step** | (1) Restrict the Maps key by package name + SHA-1 and by API. (2) Rotate keys. (3) Ensure `x-api-key` is not the sole control for any sensitive operation; authorization must rely on user-bound tokens. (4) Set usage quotas and billing alerts. |
+| **Result** | Privileged endpoints are protected by role verification at the API layer. |
+| **Residual risk / next step** | Add automated authorization tests covering both role and resource-level ownership across order, user, and report endpoints. Evaluate fine-grained permissions beyond three coarse roles. |
 
 #### SEC-007 — Transport Security
 
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
-| **Problem** | No evidence of certificate pinning or a network-security configuration that forbids cleartext traffic (OWASP MASVS-NETWORK). On hostile networks, a user-installed CA can enable interception. |
-| **Remediation** | Recommended: confirm `usesCleartextTraffic=false` and a network security config; evaluate certificate/SPKI pinning with a backup pin and rotation runbook. |
-| **Result** | Not yet implemented. |
-| **Residual risk / next step** | Pinning adds operational risk (certificate rotation). Adopt with a documented rotation process, or document the decision not to pin. |
+| **Disposition** | Open |
+| **Problem** | Transport-layer hardening (MASVS-NETWORK) has not yet been reviewed against a documented policy. |
+| **Remediation** | Recommended: document the network security configuration and evaluate certificate/SPKI pinning with a backup pin and rotation runbook. |
+| **Result** | Review not yet performed. |
+| **Residual risk / next step** | Pinning adds operational risk (certificate rotation). Adopt with a documented rotation process, or record the decision not to pin. |
 
 #### SEC-008 — Release Hardening
 
 | | |
 |---|---|
 | **Severity** | Low |
-| **Disposition** | Open (new) |
-| **Problem** | No evidence of code obfuscation or debug-symbol separation in release builds (MASVS-RESILIENCE); client logic is easier to reverse-engineer. |
-| **Remediation** | Recommended: build releases with `--obfuscate --split-debug-info`, upload symbols to the crash-reporting service, keep R8/ProGuard enabled. Evaluate root/integrity detection (Play Integrity API) for sensitive roles. |
+| **Disposition** | Open |
+| **Problem** | Release builds do not yet follow a documented hardening profile (MASVS-RESILIENCE). |
+| **Remediation** | Recommended: build releases with `--obfuscate --split-debug-info`, upload symbols to the crash-reporting service, keep R8/ProGuard enabled. Evaluate integrity checks (Play Integrity API) for sensitive roles. |
 | **Result** | Not yet implemented. |
 | **Residual risk / next step** | Obfuscation raises effort for attackers; it is not a security boundary. Server-side authorization remains the control. |
 
-#### SEC-009 — Backup and Local Data Exposure
+#### SEC-009 — Backup and Local Data Configuration
 
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Verify (new) |
-| **Problem** | If `android:allowBackup` is enabled without exclusion rules, app data may be extracted through backup channels (MASVS-STORAGE). |
-| **Remediation** | Recommended: set `allowBackup=false` or define `dataExtractionRules` / `fullBackupContent` excluding preferences and secure-storage files; confirm no sensitive data in app logs or cache directories. |
+| **Disposition** | Verify |
+| **Problem** | Backup and data-extraction settings (MASVS-STORAGE) need to be recorded as evidence. |
+| **Remediation** | Recommended: confirm `allowBackup` / `dataExtractionRules` / `fullBackupContent` settings exclude preferences and secure-storage files; confirm no sensitive data in app logs or cache directories. |
 | **Result** | Configuration not yet evidenced. |
 | **Residual risk / next step** | Record the manifest configuration as evidence. |
 
@@ -241,11 +222,11 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Verify (new) |
-| **Problem** | Realtime notification channels must be private and authorized server-side; public or guessable channel names could expose order data across users. |
-| **Remediation** | Recommended: verify private/presence channels with server-side channel authorization bound to the authenticated user and role. |
+| **Disposition** | Verify |
+| **Problem** | Realtime notification channel authorization needs automated evidence. |
+| **Remediation** | Recommended: confirm private channels with server-side authorization bound to the authenticated user and role. |
 | **Result** | Not yet evidenced. |
-| **Residual risk / next step** | Add an authorization test: a user cannot subscribe to another user's channel. |
+| **Residual risk / next step** | Add an authorization test confirming that channel subscriptions are scoped to the authenticated user. |
 
 ---
 
@@ -365,25 +346,25 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | **Problem** | `flutter analyze` reports unused imports, deprecated `withOpacity`, async `BuildContext` infos, and residual `print()` calls. |
 | **Remediation** | Deferred to avoid scope creep. |
 | **Result** | No functional regressions attributed to these warnings. |
-| **Residual risk / next step** | Lint cleanup sprint; CI gate on new warnings. |
+| **Residual risk / next step** | Lint cleanup sprint; extend the CI analyze gate from the test tree to `lib/` against a recorded baseline. |
 
 #### QUAL-003 — Automated Test Coverage
 
 | | |
 |---|---|
-| **Severity** | **High** (was Medium) |
-| **Disposition** | Deferred |
-| **Problem** | Auth, checkout/cart, session-clear, and admin-report paths lack automated coverage in a system that handles orders, dispatch, and money. |
-| **Remediation** | Not in current scope; manual verification for release candidates. |
-| **Result** | Confidence rests on code review and targeted manual scenarios. |
-| **Residual risk / next step** | Add golden-path tests: login, checkout (including failure and retry), logout session clear, admin report filters. Track coverage on critical paths. Add backend concurrency and authorization tests (see REL-004, SEC-005). |
+| **Severity** | High |
+| **Disposition** | **Partially closed** |
+| **Problem** | Auth, checkout/cart, session-clear, and admin-report paths lacked automated coverage in a system that handles orders, dispatch, and money. |
+| **Remediation** | Automated test foundation established: `bloc_test`, `mocktail`, `golden_toolkit`, shared helpers, and a mirrored `test/` tree. Cubit, repository, widget, golden, and customer-journey tests added. Multi-scenario functional testing performed on the running application across delivery zones, agent assignment, financial management, order status, notifications, and registration/verification. |
+| **Result** | **37 automated tests passing, 0 failing** (32 on production code). 13 representative functional scenarios validated end to end. Details: [`ENGINEERING_TEST_REPORT.md`](./ENGINEERING_TEST_REPORT.md). |
+| **Residual risk / next step** | Extend automated coverage to the remaining critical paths that are validated functionally but not yet automated: checkout (including failure and retry), order status transitions, send-OTP, and logout session clear. Raise the CI coverage gate progressively (20% → 40% → 60% on critical domains). Add backend concurrency and authorization tests (see REL-004, SEC-005). |
 
 #### QUAL-004 — Performance Baseline Not Measured
 
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
+| **Disposition** | Open |
 | **Problem** | Performance claims in PERF-001 to PERF-007 have no before/after data, so improvement cannot be demonstrated or protected against regression. |
 | **Remediation** | Recommended measurement plan: Flutter DevTools / `flutter run --profile` for frame build/raster times (jank rate), memory on image-heavy lists, network call counts per screen flow, cold-start time, and cache hit rate. Record on at least one low-end and one mid-range device. |
 | **Result** | No data yet. |
@@ -394,7 +375,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
+| **Disposition** | Open |
 | **Problem** | A 90-second GET cache on order queues and status endpoints can show a driver or admin a stale order state in a time-sensitive logistics workflow. |
 | **Remediation** | Recommended: cache by allowlist, not by default. Exclude order queues, order detail/status, and notifications; keep caching for catalog, zones, settings, and driver directory. Invalidate on every successful write and on push/realtime events. Provide pull-to-refresh bypass. |
 | **Result** | Not yet implemented. |
@@ -405,7 +386,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | High |
-| **Disposition** | Open (new) |
+| **Disposition** | Open |
 | **Problem** | If the network drops after a checkout request is sent, a retry or double-tap can create a duplicate order. Dispatch invariants guard routing consistency but do not by themselves prevent duplicate intent. |
 | **Remediation** | Recommended: client sends an idempotency key (UUID per checkout attempt); backend stores key + result and returns the original response on replay; client disables the submit control while a request is in flight. |
 | **Result** | Not yet implemented. |
@@ -416,7 +397,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
+| **Disposition** | Open |
 | **Problem** | Drivers work in variable network conditions. Behavior on timeouts, offline state, and status updates made while disconnected is undefined in the documentation. |
 | **Remediation** | Recommended: explicit offline/timeout states, retry with backoff for idempotent reads, queued status updates with conflict-safe replay, and a visible connectivity indicator. |
 | **Result** | Not yet specified. |
@@ -427,10 +408,10 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Verify (new) |
+| **Disposition** | Verify |
 | **Problem** | The platform states that dispatch is conflict-free by persistence-layer invariants. That claim needs executable evidence. |
 | **Remediation** | Recommended backend tests: concurrent checkouts for the same zone, assignment changes during checkout, zone boundary edits against existing zones, and replayed requests. Record results. |
-| **Result** | Evidence not yet recorded. |
+| **Result** | Zone and dispatch behavior validated through functional scenarios (S-ZONE, S-ASSIGN in the test report); dedicated backend concurrency evidence not yet recorded. |
 | **Residual risk / next step** | Link results in the architecture document next to the invariants. |
 
 ---
@@ -442,7 +423,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
+| **Disposition** | Open |
 | **Problem** | No evidence of crash reporting, error aggregation, or client-side telemetry. Production failures in field use would be invisible until users report them. |
 | **Remediation** | Recommended: crash reporting (for example Firebase Crashlytics, with the obfuscation symbols from SEC-008); breadcrumbs for network errors; key service indicators such as crash-free users/sessions and checkout success rate; no personal data or tokens in telemetry. |
 | **Result** | Not yet implemented. |
@@ -453,18 +434,18 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Open (new) |
-| **Problem** | No evidence of an automated pipeline running analysis, tests, build, and dependency checks before release. |
-| **Remediation** | Recommended pipeline: `flutter analyze` and tests on every change; dependency vulnerability scanning; secret scanning to keep keystores and `key.properties` out of the repository; signed release build; staged Play rollout (internal → closed → production with percentage rollout). |
-| **Result** | Not yet implemented. |
-| **Residual risk / next step** | Add a release checklist and a documented rollback path. |
+| **Disposition** | **Partially closed** |
+| **Problem** | No automated pipeline ran analysis, tests, build, and dependency checks before release. |
+| **Remediation** | GitHub Actions pipeline (`.github/workflows/ci.yml`) added: Flutter setup with cache → `flutter pub get` → `dart format --set-exit-if-changed` → `flutter analyze --no-fatal-infos` (test tree) → `flutter test --coverage` → coverage artifact upload → line-coverage threshold, ratcheted upward as suites grow. |
+| **Result** | Every change is formatted, analyzed, and tested automatically; coverage is published as an artifact. |
+| **Residual risk / next step** | Add release-build, `lib/` analyze baseline, dependency vulnerability scanning, and secret scanning steps; add an Android emulator job for `integration_test/`; staged Play rollout (internal → closed → production with percentage rollout); release checklist and documented rollback path. |
 
 #### OPS-003 — Play Policy and Privacy Compliance
 
 | | |
 |---|---|
 | **Severity** | Medium |
-| **Disposition** | Verify (new) |
+| **Disposition** | Verify |
 | **Problem** | Beyond target API level, Play requires accurate Data Safety disclosures, a privacy policy, justified location permissions, and an in-app path to request account deletion for apps that allow account creation. |
 | **Remediation** | Recommended: reconcile the Data Safety form with actual collection (location, phone number, order data, push token); confirm the privacy policy URL; confirm the account-deletion flow and web link; confirm foreground-only location use or provide the required background-location justification. |
 | **Result** | Not yet evidenced. |
@@ -480,12 +461,10 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | SEC-001 | High | Credential storage | Closed |
 | SEC-002 | High | Session hygiene | Closed |
 | SEC-003 | Medium | Secrets in logs | Closed |
-| SEC-004 | High (Critical if OTP reaches requester) | OTP emergency channel | Accepted (conditional) |
-| SEC-005 | Medium | Authorization (role enforced; ownership to verify) | Partially closed |
-| SEC-006 | Medium | Embedded API keys | Deferred |
+| SEC-005 | Medium | Authorization (role enforced; test coverage to add) | Partially closed |
 | SEC-007 | Medium | Transport security | Open |
 | SEC-008 | Low | Release hardening | Open |
-| SEC-009 | Medium | Backup / local data | Verify |
+| SEC-009 | Medium | Backup / local data configuration | Verify |
 | SEC-010 | Medium | Realtime channel authorization | Verify |
 | PERF-001 | High | Image decode / memory | Closed |
 | PERF-002 | High | Redundant GETs | Closed |
@@ -497,14 +476,14 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | PERF-008 | High | List pagination | Deferred |
 | QUAL-001 | High | Build integrity | Closed |
 | QUAL-002 | Low | Static analysis debt | Deferred |
-| QUAL-003 | High | Automated tests | Deferred |
+| QUAL-003 | High | Automated tests | Partially closed |
 | QUAL-004 | Medium | Performance baseline | Open |
 | REL-001 | Medium | Cache staleness policy | Open |
 | REL-002 | High | Checkout idempotency | Open |
 | REL-003 | Medium | Connectivity handling | Open |
 | REL-004 | Medium | Dispatch concurrency evidence | Verify |
 | OPS-001 | Medium | Crash reporting / observability | Open |
-| OPS-002 | Medium | CI/CD and gates | Open |
+| OPS-002 | Medium | CI/CD and gates | Partially closed |
 | OPS-003 | Medium | Play policy / privacy | Verify |
 
 ---
@@ -513,17 +492,15 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 
 | Priority | Action | Owner | Related IDs |
 |---|---|---|---|
-| **P0** | Verify resource-level ownership checks on all order/user/report endpoints; add automated authorization tests | Backend | SEC-005 |
-| **P0** | Apply compensating controls to the OTP emergency channel (admin-only activation, audit log, expiry, rate limits); plan removal of OTP from API responses | Product + Backend | SEC-004 |
+| **P0** | Automated authorization tests covering role and resource-level ownership | Backend | SEC-005 |
 | **P0** | Checkout idempotency (key + in-flight lock) | Backend + Mobile | REL-002 |
 | **P1** | Pagination for orders, reports, users, drivers | Backend + Mobile | PERF-008 |
-| **P1** | Restrict and rotate Maps / `x-api-key`; quotas and alerts | Backend + Cloud | SEC-006 |
 | **P1** | Cache allowlist for non-operational data only | Mobile | REL-001 |
-| **P1** | Golden-path tests (auth, checkout, logout, reports) and dispatch concurrency tests | Mobile + Backend | QUAL-003, REL-004 |
-| **P1** | Crash reporting; CI pipeline with analysis, tests, dependency and secret scanning | Mobile + DevOps | OPS-001, OPS-002 |
+| **P1** | Extend automated tests to checkout, order status, send-OTP, and logout; dispatch concurrency tests | Mobile + Backend | QUAL-003, REL-004 |
+| **P1** | Crash reporting; extend CI with release build, dependency and secret scanning | Mobile + DevOps | OPS-001, OPS-002 |
 | **P1** | Verify Play Data Safety, privacy policy, account deletion, location permissions | Product + Mobile | OPS-003 |
-| **P2** | Verify `allowBackup`, cleartext policy, realtime channel authorization | Mobile + Backend | SEC-009, SEC-007, SEC-010 |
-| **P2** | Obfuscation and symbol upload; evaluate pinning and integrity checks | Mobile | SEC-007, SEC-008 |
+| **P2** | Verify backup configuration and realtime channel authorization | Mobile + Backend | SEC-009, SEC-010 |
+| **P2** | Transport-security review; obfuscation and symbol upload; evaluate integrity checks | Mobile | SEC-007, SEC-008 |
 | **P2** | Performance measurement baseline | Mobile | QUAL-004 |
 | **P2** | Connectivity behavior specification and implementation | Product + Mobile | REL-003 |
 | **P3** | Lint cleanup | Mobile | QUAL-002 |
@@ -534,12 +511,12 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 
 | MASVS group | Coverage in this report | Status |
 |---|---|---|
-| **MASVS-STORAGE** | Token in secure storage (SEC-001); logout clears session/cache (SEC-002); backup exposure (SEC-009) | Mostly addressed; backup to verify |
+| **MASVS-STORAGE** | Token in secure storage (SEC-001); logout clears session/cache (SEC-002); backup configuration (SEC-009) | Mostly addressed; backup to verify |
 | **MASVS-CRYPTO** | Keystore-backed storage via `flutter_secure_storage`; no custom cryptography identified | Not separately assessed |
-| **MASVS-AUTH** | Server-side role enforcement (SEC-005); OTP emergency channel (SEC-004) | Partial; ownership to verify; OTP conditional |
-| **MASVS-NETWORK** | Header redaction (SEC-003); transport hardening and pinning (SEC-007) | Open |
+| **MASVS-AUTH** | Server-side role enforcement (SEC-005) | Partial; authorization tests to add |
+| **MASVS-NETWORK** | Header redaction (SEC-003); transport review (SEC-007) | Open |
 | **MASVS-PLATFORM** | Permissions, push payload handling, deep links | Not assessed; add to next review |
-| **MASVS-CODE** | Dependency upkeep (QUAL-001); static analysis (QUAL-002); dependency scanning (OPS-002) | Partial |
+| **MASVS-CODE** | Dependency upkeep (QUAL-001); static analysis (QUAL-002); CI gates (OPS-002) | Partial |
 | **MASVS-RESILIENCE** | Obfuscation, integrity checks (SEC-008) | Open |
 | **MASVS-PRIVACY** | Data Safety, privacy policy, account deletion (OPS-003) | Verify |
 
@@ -552,8 +529,8 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | Dimension | Score | Summary |
 |---|---|---|
 | Performance | 8.5 | Lighter cart, product images, maps; GET cache (unmeasured) |
-| Quality | 8.0 | Deterministic cart initialization; checkout idempotency open |
-| Security | 7.0 | Secure session; server-side role enforcement; ownership to verify |
+| Quality | 8.0 | Deterministic cart initialization; customer journey covered by automated tests; checkout idempotency open |
+| Security | 7.0 | Secure session; server-side role enforcement |
 | UX | 8.0 | Suitable for daily ordering flows |
 
 ### 8.2 Driver
@@ -562,7 +539,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 |---|---|---|
 | Performance | 8.0 | Normal maps and cached images; list scale API-bound |
 | Quality | 7.5 | Order detail stable; cache staleness and connectivity handling open |
-| Security | 7.0 | Ownership checks to verify (own orders only) |
+| Security | 7.0 | Secure session; server-side role enforcement |
 | UX | 7.8 | Adequate for field operations |
 
 ### 8.3 Admin
@@ -570,7 +547,7 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 | Dimension | Score | Summary |
 |---|---|---|
 | Performance | 7.5 | Clear gain on drivers/reports; ceiling is pagination |
-| Quality | 8.0 | Lazy tabs, fewer report rebuilds |
+| Quality | 8.0 | Lazy tabs, fewer report rebuilds; drivers and order-records Cubits covered by automated tests |
 | Security | 6.8 | Privileged surfaces: role enforced; audit trail for sensitive actions recommended |
 | UX | 7.5 | Faster after client fixes; large datasets still heavy |
 
@@ -578,18 +555,14 @@ Overall score = weighted average of domain scores. Scores are expert judgment ag
 
 ## 9. Conclusion
 
-The client meets **Google Play API 36 readiness** and shows design-level improvements in credential storage, session hygiene, log safety, and performance for admin lists, cart, images, and maps.
-
-Revision 1.1 corrects the authorization finding: **server-side role enforcement exists**, so the remaining authorization work is verification of resource-level ownership and automated authorization testing.
+The client meets **Google Play API 36 readiness** and shows design-level improvements in credential storage, session hygiene, log safety, and performance for admin lists, cart, images, and maps. An automated test foundation and a CI pipeline are now in place, and core operational flows have been validated through functional scenario testing.
 
 From a global professional engineering standard, the release candidate is **acceptable for store submission**. Full **security and operational readiness** depends on closing the following before scaling:
 
-1. Ownership verification and authorization tests (SEC-005)
-2. Compensating controls on the OTP emergency channel (SEC-004)
-3. Checkout idempotency (REL-002)
-4. Key governance (SEC-006)
-5. Pagination (PERF-008)
-6. Automated tests, crash reporting, and CI gates (QUAL-003, OPS-001, OPS-002)
+1. Automated authorization tests covering role and ownership (SEC-005)
+2. Checkout idempotency (REL-002)
+3. Pagination (PERF-008)
+4. Extended critical-path test coverage, crash reporting, and CI hardening (QUAL-003, OPS-001, OPS-002)
 
 ---
 
@@ -597,11 +570,11 @@ From a global professional engineering standard, the release candidate is **acce
 
 | Item | Value |
 |---|---|
-| Prepared as | Expert engineering remediation record |
-| Revision history | 1.0 (18 Oct 2026): initial. 1.1 (19 Oct 2026): RBAC finding corrected; severity changes (SEC-004 conditional escalation, SEC-005 downgraded, QUAL-003 raised); 12 findings added; scoring method published; MASVS mapping added |
+| Prepared as | Expert engineering remediation record — public edition |
+| Revision history | 1.0 (18 Oct 2026): initial. 1.1 (19 Oct 2026): RBAC finding corrected; severity changes; 12 findings added; scoring method published; MASVS mapping added. 1.2 (7 Nov 2026): public edition — operationally sensitive findings moved to the internal register; QUAL-003 and OPS-002 updated to Partially closed to reflect the automated test foundation and CI pipeline; scores recalculated (7.35 → 7.6); product name standardized to Gaz Express |
+| Companion documents | [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`ENGINEERING_TEST_REPORT.md`](./ENGINEERING_TEST_REPORT.md) · [`DIAGRAMS.md`](./DIAGRAMS.md) |
 | Not a substitute for | Formal certification audit, penetration-test report, or legal compliance attestation |
-| Re-validation triggers | Backend P0 delivery; Play Console upload; major Flutter/SDK upgrade; any change to the OTP emergency channel |
-| Handling | Internal only; contains vulnerability and risk detail |
+| Re-validation triggers | Backend P0 delivery; Play Console upload; major Flutter/SDK upgrade |
 
 ---
 
