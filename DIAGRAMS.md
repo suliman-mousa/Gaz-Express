@@ -451,7 +451,7 @@ flowchart TB
   API --> CDN
 ```
 
-> **Build tooling (not a runtime container):** the Flutter client may be **analyzed, tested, and APK-built** via Docker (`Dockerfile` / `docker-compose.yml`). That path does not appear above because it is a developer/CI concern, not a production deployment node. See [`DOCKER.md`](./DOCKER.md).
+> **Build tooling (not a runtime container):** the Flutter client may be **analyzed, tested, and APK-built** via Docker (`Dockerfile` / `docker-compose.yml`). That path does not appear above because it is a developer/CI concern, not a production deployment node.
 
 ---
 

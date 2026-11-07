@@ -14,7 +14,9 @@ Coordinate-based zone routing · Admin-managed agent assignment · Conflict-free
 > **Scope note.** This document describes the Gaz Express platform for context.
 > This repository contains the **mobile client only**. The backend (zone engine,
 > order pipeline, persistence, admin configuration) is maintained in a separate
-> service. Architecture details live in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
+> Laravel/MySQL service, designed and supervised by the project's systems architect /
+> tech lead. Order status changes are synchronized in real time across the customer,
+> agent, and admin apps. Architecture details live in [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
 ---
 
@@ -232,7 +234,7 @@ Informed by ISO/IEC 25010 quality dimensions and OWASP MASVS session/secrets hyg
 - Android SDK with API 36 platform components
 - Valid `android/key.properties` for release signing (not committed)
 - Firebase / Google Maps configuration for your environment
-- **Optional (Docker path):** Docker Engine / Docker Desktop with ≥ 8 GB RAM (see [`DOCKER.md`](./DOCKER.md))
+- **Optional (Docker path):** Docker Engine / Docker Desktop with ≥ 8 GB RAM
 
 ### Commands
 
@@ -247,7 +249,7 @@ Release output: `build/app/outputs/bundle/release/`.
 
 ### Docker (analyze / test / APK)
 
-Use Docker when you want a reproducible toolchain without installing the full Android SDK locally. Full requirements and signing notes: [`DOCKER.md`](./DOCKER.md).
+Use Docker when you want a reproducible toolchain without installing the full Android SDK locally.
 
 ```bash
 docker compose build

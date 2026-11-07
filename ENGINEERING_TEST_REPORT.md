@@ -11,7 +11,7 @@
 | **Client version** | `2.0.10+26` |
 | **Report date** | 19 October 2026 |
 | **Classification** | Internal / engineering |
-| **Companion docs** | [`TESTING.md`](./TESTING.md) · [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`ENGINEERING_REMEDIATION_REPORT.md`](./ENGINEERING_REMEDIATION_REPORT.md) · [`DOCKER.md`](./DOCKER.md) |
+| **Companion docs** | [`ARCHITECTURE.md`](./ARCHITECTURE.md) · [`ENGINEERING_REMEDIATION_REPORT.md`](./ENGINEERING_REMEDIATION_REPORT.md) |
  
 ---
 
@@ -321,7 +321,7 @@ dart format --set-exit-if-changed test integration_test
 flutter analyze --no-fatal-infos test integration_test lib/core/widgets/app_network_image.dart
 ```
 
-Full operator guide: [`TESTING.md`](./TESTING.md).
+Full operator guide: `TESTING.md` in the private application repository.
 
 ---
 
