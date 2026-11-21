@@ -11,7 +11,7 @@ Coordinate-based zone routing · Admin-managed agent assignment · Conflict-free
 
 
 
-> **Scope note.** This document describes the Gaz Express platform for context.
+> **Scope note.** This document describes the Gaz Express platform for context
 > This repository contains the **mobile client only**. The backend (zone engine,
 > order pipeline, persistence, admin configuration) is maintained in a separate
 > Laravel/MySQL service, designed and supervised by the project's systems architect /
